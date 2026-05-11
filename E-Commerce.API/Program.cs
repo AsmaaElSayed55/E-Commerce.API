@@ -11,9 +11,13 @@ namespace E_Commerce.API
             var builder = WebApplication.CreateBuilder(args);
 
             // 1. REGISTER SERVICES (Must be before builder.Build())
+            // Add services to the container.
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+            builder.Services.AddOpenApi();
 
             builder.Services.AddDbContext<StoreDbContext>(options =>
             {
@@ -44,20 +48,28 @@ namespace E_Commerce.API
                     Console.WriteLine($"An error occurred: {ex.Message}");
                 }
             }
+            var app = builder.Build();
 
             // 3. CONFIGURE MIDDLEWARE
+            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                app.MapOpenApi();
             }
 
             app.UseHttpsRedirection();
+
+
             app.MapControllers();
+
             app.Run();
         }
     }
 }
+
+
 
 
 // Module ==> Entities
