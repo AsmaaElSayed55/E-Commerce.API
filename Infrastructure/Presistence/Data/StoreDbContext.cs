@@ -1,7 +1,4 @@
-﻿
-using System.Reflection;
-
-namespace Presistence.Data
+﻿namespace Presistence.Data
 {
     public class StoreDbContext : DbContext
     {

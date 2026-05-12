@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace Presistence.Data.Configurations
+﻿namespace Presistence.Data.Configurations
 {
     internal class ProductConfigurations : IEntityTypeConfiguration<Product>
     {

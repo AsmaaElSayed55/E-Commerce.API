@@ -1,7 +1,7 @@
-﻿
-namespace Presistence
+﻿namespace Presistence
 {
     public class AssemblyReference
     {
+
     }
 }

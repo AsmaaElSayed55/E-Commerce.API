@@ -1,17 +1,17 @@
-﻿using Domain.Contracts;
-using System.Text.Json;
+﻿using System.Text.Json;
 namespace Presistence.Data
 {
     public class DataSeeding (StoreDbContext _dbContext) : IDataSeeding
     {
-        public void SeedData()
+        public async Task SeedDataAsync()
         {
             try
             {
+                var pendingMigrations = await _dbContext.Database.GetPendingMigrationsAsync();
                 // Any Pending Migration ==> Apply database
-                if (_dbContext.Database.GetPendingMigrations().Any())
+                if ((pendingMigrations).Any())
                 {
-                    _dbContext.Database.Migrate();
+                    await _dbContext.Database.MigrateAsync();
 
                 }
 
@@ -23,13 +23,13 @@ namespace Presistence.Data
                     // 3. Product
                     //  var productBrandData = File.ReadAllText("C:\\D\\Projects\\API Projects\\E-Commerce\\Infrastructure\\Presistence\\Data\\DataSeed\\brands.json"); // Static Path
 
-                    var productBrandData = File.ReadAllText("..\\Infrastructure\\Presistence\\Data\\DataSeed\\brands.json"); // Dynamic Path
+                    var productBrandData = File.OpenRead("..\\Infrastructure\\Presistence\\Data\\DataSeed\\brands.json"); // Dynamic Path
 
-                    var productBrands = JsonSerializer.Deserialize<List<ProductBrand>>(productBrandData);
+                    var productBrands = await JsonSerializer.DeserializeAsync<List<ProductBrand>>(productBrandData);
 
                     if (productBrands is not null && productBrands.Any())
                     {
-                        _dbContext.ProductBrands.AddRange(productBrands);
+                        await _dbContext.ProductBrands.AddRangeAsync(productBrands);
                     }
 
                 }
@@ -37,13 +37,13 @@ namespace Presistence.Data
                 if (!_dbContext.ProductTypes.Any())
                 {
 
-                    var productTypeData = File.ReadAllText("..\\Infrastructure\\Presistence\\Data\\DataSeed\\types.json"); // Dynamic Path
+                    var productTypeData = File.OpenRead("..\\Infrastructure\\Presistence\\Data\\DataSeed\\types.json"); // Dynamic Path
 
-                    var productTypes = JsonSerializer.Deserialize<List<ProductType>>(productTypeData);
+                    var productTypes = await JsonSerializer.DeserializeAsync<List<ProductType>>(productTypeData);
 
                     if (productTypes is not null && productTypes.Any())
                     {
-                        _dbContext.ProductTypes.AddRange(productTypes);
+                        await _dbContext.ProductTypes.AddRangeAsync(productTypes);
                     }
 
                 }
@@ -51,18 +51,18 @@ namespace Presistence.Data
                 if (!_dbContext.Products.Any())
                 {
 
-                    var productData = File.ReadAllText("..\\Infrastructure\\Presistence\\Data\\DataSeed\\product.json"); // Dynamic Path
+                    var productData = File.OpenRead("..\\Infrastructure\\Presistence\\Data\\DataSeed\\product.json"); // Dynamic Path
 
-                    var products = JsonSerializer.Deserialize<List<Product>>(productData);
+                    var products = await JsonSerializer.DeserializeAsync<List<Product>>(productData);
 
                     if (products is not null && products.Any())
                     {
-                        _dbContext.Products.AddRange(products);
+                        await _dbContext.Products.AddRangeAsync(products);
                     }
 
                 }
 
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
 
             }
             catch (Exception ex)

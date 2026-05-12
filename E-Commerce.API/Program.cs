@@ -1,17 +1,15 @@
 using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Presistence.Data;
+using Presistence.Repositories;
 
 namespace E_Commerce.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            // 1. REGISTER SERVICES (Must be before builder.Build())
-            // Add services to the container.
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -27,12 +25,7 @@ namespace E_Commerce.API
             // FIX: Move this registration UP here!
             builder.Services.AddScoped<IDataSeeding, DataSeeding>();
 
-            // ---------------------------------------------------------
-            var app = builder.Build(); // The container is now locked
-            // ---------------------------------------------------------
-
-            // 2. EXECUTE SEEDING (Must be after builder.Build())
-            // Use a scope to resolve scoped services
+            var app = builder.Build(); 
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -40,7 +33,7 @@ namespace E_Commerce.API
                 {
                     var seeder = services.GetRequiredService<IDataSeeding>();
                     // This triggers Migrate() inside your class to create the DB
-                    seeder.SeedData();
+                    await seeder.SeedDataAsync();
                 }
                 catch (Exception ex)
                 {
@@ -48,7 +41,7 @@ namespace E_Commerce.API
                     Console.WriteLine($"An error occurred: {ex.Message}");
                 }
             }
-            var app = builder.Build();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // 3. CONFIGURE MIDDLEWARE
             // Configure the HTTP request pipeline.

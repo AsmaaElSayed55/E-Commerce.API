@@ -2,6 +2,7 @@
 {
     public interface IDataSeeding
     {
-        void SeedData(); // Imp ==> Database
+        Task SeedDataAsync(); // Imp ==> Database
+
     }
 }
