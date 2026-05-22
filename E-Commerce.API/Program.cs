@@ -2,6 +2,9 @@ using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Presistence.Data;
 using Presistence.Repositories;
+using Services;
+using Services.Abstraction.Contracts;
+using Services.Implementations;
 
 namespace E_Commerce.API
 {
@@ -24,6 +27,9 @@ namespace E_Commerce.API
 
             // FIX: Move this registration UP here!
             builder.Services.AddScoped<IDataSeeding, DataSeeding>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddAutoMapper(cfg => { },typeof(AssemblyReference).Assembly);
+            builder.Services.AddScoped<IServiceManager, ServiceManager>();
 
             var app = builder.Build(); 
             using (var scope = app.Services.CreateScope())
@@ -41,14 +47,13 @@ namespace E_Commerce.API
                     Console.WriteLine($"An error occurred: {ex.Message}");
                 }
             }
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // 3. CONFIGURE MIDDLEWARE
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(); // 
                 app.MapOpenApi();
             }
 
